@@ -42,7 +42,18 @@ class SudokuSolution(SudokuGrid):
         y1 = candidates[0][1]
         x2 = candidates[1][0]
         y2 = candidates[1][1]
-        print(candidates)
+        # print(candidates)
         neighbour = SudokuSolution(SudokuGrid.copy_grid(self.grid))
+        neighbour.available = self.available
         neighbour.swap(x1, y1, x2, y2)
         return neighbour
+
+    def cost(self):
+        total_cost = 0
+        for i, row in enumerate(self.grid):
+            for j, elem in enumerate(row):
+                backup = elem
+                self.grid[i][j] = 0
+                total_cost += self.region_contains(i, j, backup) + self.row_contains(j, backup) + self.column_contains(i, backup)
+                self.grid[i][j] = backup
+        return total_cost

@@ -1,4 +1,9 @@
+from __future__ import annotations
+
 # to nie jest potrzebne, dodałem dla zabawy
+from grid import Grid
+
+
 def valid_coords(func):
     def func_wrapper(*args, **kwargs):
         if args[1] in range(9) and args[2] in range(9):
@@ -22,10 +27,10 @@ def valid_coord(func):
 # generowanie sudoku, pełnej poprawnej planszy, a następnie usuwanie części pól z zachowaniem jednego rozwiązania
 # na podstawie https://www.101computing.net/sudoku-generator-algorithm/
 
-class SudokuGrid:
+class SudokuGrid(Grid):
 
     def __init__(self, grid=None):
-        self.grid = [[0 for _ in range(9)] for _ in range(9)] if grid is None else grid
+        super().__init__(grid)
 
     @classmethod
     def from_grid(cls, grid):
@@ -74,12 +79,12 @@ class SudokuGrid:
     def is_grid_full(self) -> bool:
         return 0 not in [self.grid[i][j] for i in range(9) for j in range(9)]
 
-    def __str__(self) -> str:
-        return "\n".join([" ".join(map(lambda x: str(x), self.grid[i])) for i in range(9)])
-
     @valid_coords
     def delete(self, row: int, column: int):
         self.put(row, column, 0)
+
+    def difference(self, other: SudokuGrid) -> Grid:
+        return Grid([[1 if self.grid[i][j] != other.grid[i][j] else 0 for j in range(9)] for i in range(9)])
 
     @staticmethod
     def copy_grid(grid):
