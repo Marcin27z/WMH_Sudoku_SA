@@ -24,8 +24,13 @@ class FullBoard(SudokuGrid):
             index = cached[0]
         else:
             index = instance
-        with open(f'sudoku/{level}/{index}') as file:
-            return cls(eval(file.readline(), {}))
+        try:
+            with open(f'sudoku/{level}/{index}') as file:
+                return cls(eval(file.readline(), {}))
+        except FileNotFoundError:
+            full_board = cls()
+            full_board.reduce_fields(81 - level)
+            return full_board
 
     def generate_full(self):
         for i in range(0, 81):
