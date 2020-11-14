@@ -25,7 +25,7 @@ class FullBoard(SudokuGrid):
         else:
             index = instance
         with open(f'sudoku/{level}/{index}') as file:
-            return cls(eval(file.readline()))
+            return cls(eval(file.readline(), {}))
 
     def generate_full(self):
         for i in range(0, 81):
