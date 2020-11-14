@@ -1,5 +1,6 @@
 from sudoku_grid import SudokuGrid
 from random import shuffle
+import os
 
 
 class FullBoard(SudokuGrid):
@@ -14,6 +15,17 @@ class FullBoard(SudokuGrid):
     @classmethod
     def from_grid(cls, grid):
         return cls(grid)
+
+    @classmethod
+    def from_cache(cls, level, instance=-1):
+        if instance == -1:
+            cached = os.listdir(f'sudoku/{level}')
+            shuffle(cached)
+            index = cached[0]
+        else:
+            index = instance
+        with open(f'sudoku/{level}/{index}') as file:
+            return cls(eval(file.readline()))
 
     def generate_full(self):
         for i in range(0, 81):
@@ -65,11 +77,20 @@ class FullBoard(SudokuGrid):
     def reduce_fields(self, number):
         if number > 81 - 17:
             raise Exception
-        while number > 0:
+        i = number
+        while i > 0:
             row, column = self.get_random_not_empty_cell()
             backup = self.get(row, column)
             self.delete(row, column)
             if self.possible_solutions != 1:
                 self.put(row, column, backup)
             else:
-                number -= 1
+                i -= 1
+
+        if not os.path.exists('sudoku'):
+            os.makedirs('sudoku')
+        if not os.path.exists(f'sudoku/{81 - number}'):
+            os.makedirs(f'sudoku/{81 - number}')
+        count = len(os.listdir(f'sudoku/{81 - number}'))
+        with open(f'sudoku/{81 - number}/{count}', mode='w') as file:
+            file.write(str(self.grid))

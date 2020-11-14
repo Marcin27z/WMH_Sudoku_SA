@@ -6,7 +6,8 @@ from sudoku_solution import SudokuSolution
 
 def algorithm():
     full_board = FullBoard()
-    full_board.reduce_fields(60)
+    full_board.reduce_fields(16)
+    # full_board = FullBoard.from_cache(66, 0)
     sudoku_solution = SudokuSolution.new(full_board.grid, False)
 
     mode = "random"
