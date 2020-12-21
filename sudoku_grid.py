@@ -44,6 +44,12 @@ class SudokuGrid(Grid):
     def row_contains(self, row: int, number: int) -> bool:
         return number in self.grid[row]
 
+    def get_row(self, row: int) -> list:
+        return self.grid[row]
+
+    def get_column(self, column: int) -> list:
+        return [self.grid[i][column] for i in range(9)]
+
     @valid_coords
     def put(self, row: int, column: int, number: int):
         self.grid[row][column] = number

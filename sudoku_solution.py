@@ -19,6 +19,7 @@ class SudokuSolution(SudokuGrid):
         self.counts = []
         self.conflicts = []
         self.empty_in_regions = []
+        self.conflicts_counts_in_regions = []
 
     @classmethod
     def new(cls, sudoku_grid, fill=False):
@@ -43,6 +44,7 @@ class SudokuSolution(SudokuGrid):
         cp.conflicts = cp.conflicts
         cp.counts = sudoku_solution.counts
         cp.empty_in_regions = sudoku_solution.empty_in_regions
+        cp.conflicts_counts_in_regions = sudoku_solution.conflicts_counts_in_regions
         return cp
 
     def __str__(self) -> str:
@@ -89,7 +91,14 @@ class SudokuSolution(SudokuGrid):
         def duplicates_in_row(row: int, number: int) -> int:
             return sum([self.grid[row][i] == number for i in range(9)]) - 1
 
-        conflicts = [duplicates_in_row(i, self.get(i, j)) + duplicates_in_column(j, self.get(i, j)) + duplicates_in_region(i, j, self.get(i, j)) for (i, j) in self.available]
+        conflicts = [duplicates_in_row(i, self.get(i, j)) + duplicates_in_column(j, self.get(i, j)) for (i, j) in self.available]
+        # conflicts = [duplicates_in_row(i, self.get(i, j)) + duplicates_in_column(j, self.get(i, j)) + duplicates_in_region(i, j, self.get(i, j)) for (i, j) in self.available]
+
+        # regions_sizes = [0] + [len(region) for region in self.empty_in_regions]
+        #
+        # self.conflicts_counts_in_regions = \
+        #     [sum(conflicts[regions_sizes[i]:regions_sizes[i + 1]]) for i in range(len(regions_sizes) - 1)]
+
         return conflicts
 
     def swap(self, x1, y1, x2, y2):
@@ -118,12 +127,20 @@ class SudokuSolution(SudokuGrid):
     def create_neighbour_2(self) -> SudokuSolution:
         neighbour = SudokuSolution.copy(self)
 
-        empty = self.empty_in_regions[:]
-        random.shuffle(empty)
+        empty = list(self.empty_in_regions)
+        # probabilities = list(map(lambda x: 1 - math.exp(-x), self.conflicts_counts_in_regions))
+        # sum_of_probabilities = sum(probabilities)
+        # probabilities = list(map(lambda x: x / sum_of_probabilities, probabilities))
+
+        # empty, probabilities = zip(*(filter(lambda e: len(e[0]) >= 2, zip(empty, probabilities))))
+        # empty = list(empty)
         empty = list(filter(lambda x: len(x) >= 2, empty))
+        random.shuffle(empty)
         if len(empty) == 0:
             return neighbour
         candidates = empty[0]
+        # candidates = np.random.choice(empty, replace=False, p=probabilities, size=1)[0]
+        candidates = random.sample(candidates, k=2)
         x1 = candidates[0][0]
         y1 = candidates[0][1]
         x2 = candidates[1][0]
@@ -146,3 +163,11 @@ class SudokuSolution(SudokuGrid):
                 total_cost += self.region_contains(i, j, backup) + self.row_contains(j, backup) + self.column_contains(i, backup)
                 self.grid[i][j] = backup
         return total_cost
+
+    def is_correct(self) -> bool:
+        if not self.is_grid_full:
+            return False
+        for i in range(9):
+            if len(set(self.get_row(i))) != 9 or len(set(self.get_row(i))) != 9:
+                return False
+        return True
