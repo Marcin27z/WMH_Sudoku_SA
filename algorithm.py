@@ -5,13 +5,23 @@ from full_board import FullBoard
 from sudoku_solution import SudokuSolution
 
 
-def algorithm():
-    # full_board = FullBoard()
-    # full_board.reduce_fields(55)
-    full_board = FullBoard.from_cache(17, 0)
+def algorithm(args):
+    fromcache   = int(args["fromcache"])
+    reducefield = int(args["reducefield"])
+    mode        = args["mode"]
+    temperature = int(args["temperature"])
+    frequency   = int(args["frequency"])
+
+
+
+    if fromcache == 1:
+        full_board = FullBoard.from_cache(int(args["board"]), 0)
+    else:
+        full_board = FullBoard()
+        full_board.reduce_fields(reducefield)
+
     sudoku_solution = SudokuSolution.new(full_board.grid, False)
 
-    mode = "not random"
 
     if mode == "random":
         sudoku_solution.fill_random()
@@ -21,7 +31,7 @@ def algorithm():
     cost = sudoku_solution.cost()
     i = 0
     step = 0
-    temperature = 20
+
     old_cost = 1000
     no_improvements = 0
 
@@ -33,8 +43,8 @@ def algorithm():
 
         # print(neighbour.difference(sudoku_solution))
         # print(cost)
-        if i % 100 == 0:
-            print(cost)
+        if i % frequency == 0:
+            #print(cost)
             temperature = temperature * 0.999
             no_improvements += 1
 
