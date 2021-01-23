@@ -20,9 +20,10 @@ class SudokuSolution(SudokuGrid):
         self.conflicts = []
         self.empty_in_regions = []
         self.conflicts_counts_in_regions = []
+        self.mode_random = False
 
     @classmethod
-    def new(cls, sudoku_grid, fill=False):
+    def new(cls, sudoku_grid):
         n = cls(sudoku_grid)
         n.available = [(i, j) for i in range(9) for j in range(9) if n.grid[i][j] == 0]
         if len(n.available) == 1:
@@ -32,9 +33,6 @@ class SudokuSolution(SudokuGrid):
             for _, elem in enumerate(row):
                 n.counts[elem] -= 1
         n.counts = n.counts[1:]
-        if fill:
-            n.fill_random()
-            print("filling")
         return n
 
     @classmethod
@@ -55,6 +53,7 @@ class SudokuSolution(SudokuGrid):
         for (i, j), number in zip(self.available, available_numbers_set):
             self.grid[i][j] = number
         self.conflicts = self.calculate_conflicts()
+        self.mode_random = True
 
     def fill_regions(self):
         not_available_in_regions = []
@@ -69,6 +68,7 @@ class SudokuSolution(SudokuGrid):
             for (x, y), number in zip(self.empty_in_regions[i], available_in_regions[i]):
                 self.grid[x][y] = number
         self.conflicts = self.calculate_conflicts()
+        self.mode_random = False
 
         # sprawdzenie, czy faktycznie każda cyfra występuje 9 razy
         # counts = [0 for _ in range(9)]
@@ -91,8 +91,10 @@ class SudokuSolution(SudokuGrid):
         def duplicates_in_row(row: int, number: int) -> int:
             return sum([self.grid[row][i] == number for i in range(9)]) - 1
 
-        conflicts = [duplicates_in_row(i, self.get(i, j)) + duplicates_in_column(j, self.get(i, j)) for (i, j) in self.available]
-        # conflicts = [duplicates_in_row(i, self.get(i, j)) + duplicates_in_column(j, self.get(i, j)) + duplicates_in_region(i, j, self.get(i, j)) for (i, j) in self.available]
+        if self.mode_random:
+            conflicts = [duplicates_in_row(i, self.get(i, j)) + duplicates_in_column(j, self.get(i, j)) + duplicates_in_region(i, j, self.get(i, j)) for (i, j) in self.available]
+        else:
+            conflicts = [duplicates_in_row(i, self.get(i, j)) + duplicates_in_column(j, self.get(i, j)) for (i, j) in self.available]
 
         # regions_sizes = [0] + [len(region) for region in self.empty_in_regions]
         #
@@ -122,6 +124,7 @@ class SudokuSolution(SudokuGrid):
         y2 = self.available[candidates[1]][1]
 
         neighbour.swap(x1, y1, x2, y2)
+        neighbour.mode_random = True
         return neighbour
 
     def create_neighbour_2(self) -> SudokuSolution:

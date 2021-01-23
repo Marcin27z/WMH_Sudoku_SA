@@ -79,7 +79,7 @@ class FullBoard(SudokuGrid):
         self._calculate_possible_solutions(FullBoard.from_grid(SudokuGrid.copy_grid(self.grid)))
         return self._counter
 
-    def reduce_fields(self, number):
+    def reduce_fields(self, number, save_to_cache=True):
         if number > 81 - 17:
             raise Exception
         i = number
@@ -92,10 +92,11 @@ class FullBoard(SudokuGrid):
             else:
                 i -= 1
 
-        if not os.path.exists('sudoku'):
-            os.makedirs('sudoku')
-        if not os.path.exists(f'sudoku/{81 - number}'):
-            os.makedirs(f'sudoku/{81 - number}')
-        count = len(os.listdir(f'sudoku/{81 - number}'))
-        with open(f'sudoku/{81 - number}/{count}', mode='w') as file:
-            file.write(str(self.grid))
+        if save_to_cache:
+            if not os.path.exists('sudoku'):
+                os.makedirs('sudoku')
+            if not os.path.exists(f'sudoku/{81 - number}'):
+                os.makedirs(f'sudoku/{81 - number}')
+            count = len(os.listdir(f'sudoku/{81 - number}'))
+            with open(f'sudoku/{81 - number}/{count}', mode='w') as file:
+                file.write(str(self.grid))
