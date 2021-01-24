@@ -48,14 +48,14 @@ def algorithm(args):
         # print(neighbour.difference(sudoku_solution))
         # print(cost)
         if i % frequency == 0:
-            print(f"Cost: {cost} Temperature: {temperature} Acceptance_ratio: {round(accepted/frequency * 100, ndigits=2)}%")
+            #print(f"Cost: {cost} Temperature: {temperature} Acceptance_ratio: {round(accepted/frequency * 100, ndigits=2)}%")
             temperature = temperature * cooling_factor
             accepted = 0
             no_improvements += 1
 
             if no_improvements == 500:
                 temperature = initial_temperature
-                print("resetting")
+                #print("resetting")
 
         i += 1
         step += 1
@@ -74,3 +74,4 @@ def algorithm(args):
 
     print('Liczba iteracji:' + str(i))
     print(sudoku_solution)
+    return i
