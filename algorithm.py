@@ -15,6 +15,7 @@ def algorithm(args):
     initial_temperature = int(args["temperature"])
     frequency = int(args["frequency"])
     cooling_factor = float(args["cooling_factor"])
+    print(mode)
 
     if from_cache:
         full_board = FullBoard.from_cache(81 - reduce_fields, int(args["board"]))
@@ -35,6 +36,7 @@ def algorithm(args):
 
     old_cost = 1000
     no_improvements = 0
+    acceptance_ratio_iter = 0
 
     temperature = initial_temperature
     accepted = 0
@@ -57,6 +59,19 @@ def algorithm(args):
                 temperature = initial_temperature
                 #print("resetting")
 
+        if round(accepted/frequency * 100, ndigits=2) == 0:
+            acceptance_ratio_iter += 1
+        else:
+            acceptance_ratio_iter = 0
+
+        if acceptance_ratio_iter == 50:
+            print(sudoku_solution.is_correct())
+            print('Liczba iteracji:' + str(i))
+            print(sudoku_solution)
+            #return i, sudoku_solution.is_correct()
+            return i, cost
+
+
         i += 1
         step += 1
 
@@ -74,4 +89,5 @@ def algorithm(args):
 
     print('Liczba iteracji:' + str(i))
     print(sudoku_solution)
-    return i
+    #return i, sudoku_solution.is_correct()
+    return i, cost

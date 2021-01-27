@@ -72,8 +72,8 @@ class SudokuSolution(SudokuGrid):
         available_numbers_set = [i + 1 for i in range(len(self._counts)) for j in range(self._counts[i])]
         for (i, j), number in zip(self._available, available_numbers_set):
             self._grid[i][j] = number
-        self._conflicts = self._calculate_conflicts()
         self._mode_random = True
+        self._conflicts = self._calculate_conflicts()
 
     ## Funkcja wypełniająca puste pola w sposób losowy, ale z zachowaniem poprawności w ramach jednego kwadratu 3x3.
     #
@@ -93,8 +93,8 @@ class SudokuSolution(SudokuGrid):
         for i in range(9):
             for (x, y), number in zip(self._empty_in_regions[i], available_in_regions[i]):
                 self._grid[x][y] = number
+        self._mode_random = True
         self._conflicts = self._calculate_conflicts()
-        self._mode_random = False
 
         # sprawdzenie, czy faktycznie każda cyfra występuje 9 razy
         # counts = [0 for _ in range(9)]

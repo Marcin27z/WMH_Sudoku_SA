@@ -22,23 +22,27 @@ if __name__ == '__main__':
     optional.add_argument("--repeat", required=False, help="how many times run algorithm for one set of parameters", type=int, default=0 )
     args = vars(ap.parse_args())
 
-    results = []
+    result = 0
     i = 0
     while i < int(args["repeat"]):
         i+=1
         print(i)
-        results.append(algorithm(args))
+#        result, is_correct = algorithm(args)
+        result, cost = algorithm(args)
 
-    result = str(sum(results)/len(results))
-    print("Srednia liczba iteracji: " + result)
-    my_file = Path("test1.csv")
+        print("Srednia liczba iteracji: " + str(result))
+        file_name = "test2_mode_random_r"+str(args["reduce_fields"])+".csv"
+        my_file = Path(file_name)
 
-    if my_file.is_file():
-        with open('test1.csv', 'a', newline='') as file:
-            writer = csv.writer(file, delimiter=';')
-            writer.writerow([str(args["reduce_fields"]), str(args["temperature"]), str(args["frequency"]), str(args["cooling_factor"]), str(args["board"]), str(args["repeat"]), result])
-    else:
-        with open('test1.csv', 'w', newline='') as file:
-            writer = csv.writer(file, delimiter=';')
-            writer.writerow(["reduce_fields", "temperature", "frequency", "cooling_factor", "board", "repeat", " iterations"])
-            writer.writerow([str(args["reduce_fields"]), str(args["temperature"]), str(args["frequency"]), str(args["cooling_factor"]), str(args["board"]), str(args["repeat"]), result])
+        if my_file.is_file():
+            with open(file_name, 'a', newline='') as file:
+                writer = csv.writer(file, delimiter=';')
+                writer.writerow([str(args["reduce_fields"]), str(args["temperature"]), str(args["frequency"]), str(args["cooling_factor"]), str(args["board"]), str(args["repeat"]), str(i), str(100), str(result), str(cost)])
+        else:
+            with open(file_name, 'w', newline='') as file:
+                writer = csv.writer(file, delimiter=';')
+                #writer.writerow(["reduce_fields", "temperature", "frequency", "cooling_factor", "board", "repeat", "iter", "acceptance_ratio_iter","no_of_iterations", "is_correct"])
+                writer.writerow(
+                    ["reduce_fields", "temperature", "frequency", "cooling_factor", "board", "repeat", "iter",
+                     "acceptance_ratio_iter", "no_of_iterations", "cost"])
+                writer.writerow([str(args["reduce_fields"]), str(args["temperature"]), str(args["frequency"]), str(args["cooling_factor"]), str(args["board"]), str(args["repeat"]), str(i), str(100), str(result), str(cost)])

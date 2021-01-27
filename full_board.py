@@ -37,8 +37,10 @@ class FullBoard(SudokuGrid):
             index = instance
         try:
             with open(f'sudoku/{level}/{index}') as file:
+                print("open(f'sudoku/{level}/{index}')")
                 return cls(eval(file.readline(), {}))
         except FileNotFoundError:
+            print("FileNotFoundError")
             full_board = cls()
             full_board.reduce_fields(81 - level)
             return full_board
@@ -108,7 +110,7 @@ class FullBoard(SudokuGrid):
     #  żeby powstałe sudoku zawierało tylko jedno rozwiązanie.
     #  @param number Liczba pól do zredukowania.
     #  @param save_to_cache Zmienna mówiąca, czy zapisać zredukowaną planszę.
-    def reduce_fields(self, number: int, save_to_cache=True):
+    def reduce_fields(self, number: int, save_to_cache=False):
         if number > 81 - 17:
             raise Exception
         i = number
